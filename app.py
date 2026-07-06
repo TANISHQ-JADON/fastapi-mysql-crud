@@ -5,6 +5,17 @@ import bcrypt  # 👈 Passlib hata kar sirf bcrypt import karo
 
 app = FastAPI()
 
+from fastapi.middleware.cors import CORSMiddleware  # Yeh file ke upar hona chahiye
+
+# app = FastAPI() ke theek niche yeh jodo:
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Browser ko permission dene ke liye
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # 2. Users ke data ka structure (Dabba)
 class UserSignup(BaseModel):
     username: str

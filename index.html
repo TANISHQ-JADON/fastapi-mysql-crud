@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Signup Page</title>
+    <style>
+        /* 🎨 Yeh hissa hamare dabbe ko sundar banayega (CSS) */
+        body {
+            font-family: Arial;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .box {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        input {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            width: 200px;
+        }
+        button {
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            width: 100%;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 🦴 Yeh hamari website ka kankal hai (HTML) -->
+    <div class="box">
+        <h2>Naya Account Banao</h2>
+        <input type="text" id="username" placeholder="Username dalo">
+        <input type="password" id="password" placeholder="Password dalo">
+        <button onclick="bhejoData()">Signup</button>
+        <p id="result" style="margin-top: 15px; font-weight: bold;"></p>
+    </div>
+
+    <!-- 🧠 Yeh hamari website ka dimaag hai (JavaScript) -->
+    <script>
+        async function bhejoData() {
+            // 1. Dabbe se data uthao
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+            const resultParagraph = document.getElementById('result');
+
+            // 2. FastAPI (Backend) ko data bhejo
+            try {
+                const response = await fetch('http://127.0.0.1:8000/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: user, password: pass })
+                });
+
+                const data = await response.json();
+
+                // 3. Jo server ne bola, wo screen par dikhao
+                if(data.error) {
+                    resultParagraph.style.color = "red";
+                    resultParagraph.innerText = data.error;
+                } else {
+                    resultParagraph.style.color = "green";
+                    resultParagraph.innerText = data.message;
+                }
+            } catch(err) {
+                resultParagraph.style.color = "red";
+                resultParagraph.innerText = "Server band hai shayad!";
+            }
+        }
+    </script>
+
+</body>
+</html>
