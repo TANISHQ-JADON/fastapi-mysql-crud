@@ -92,3 +92,32 @@ def signup_user(user_data: UserSignup):
     conn.close()
     
     return {"message": f"User '{user_data.username}' ka account successfully ban gaya!"}
+
+
+# 📍 LOGIN API: User ko verify karne ke liye
+@app.post("/login")
+def login_user(user_data: UserSignup):  # Hum wahi UserSignup wala dabba use kar rahe hain
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    # 1. Database mein check karo ki kya is naam ka user exist karta hai
+    cursor.execute("SELECT * FROM users WHERE username = %s;", (user_data.username,))
+    user = cursor.fetchone()
+    conn.close()
+    
+    # Agar user mila hi nahi, toh seedhe mana kar do
+    if not user:
+        return {"error": "Galat Username ya Password! Dobara try karo."}
+    
+    # 2. 🔎 JAADU: Check karo ki user ka dala hua password aur database wala hash match ho rahe hain ya nahi
+    # user['password_hash'] se hume database wala purana chhupa hua code mil jayega
+    password_matched = bcrypt.checkpw(
+        user_data.password.encode('utf-8'),      # Jo abhi user ne dala
+        user['password_hash'].encode('utf-8')    # Jo database mein pehle se save hai
+    )
+    
+    # 3. Agar password match ho gaya toh andar aane do, nahi toh error do
+    if password_matched:
+        return {"message": f"Welcome back, {user_data.username}! Aap successfully login ho gaye ho. 😎"}
+    else:
+        return {"error": "Galat Username ya Password! Dobara try karo."}
