@@ -1,83 +1,188 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Signup Page</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Login & Signup</title>
     <style>
-        /* 🎨 Yeh hissa hamare dabbe ko sundar banayega (CSS) */
+        /* 🎨 CSS: Premium Dark & Clean Look */
         body {
-            font-family: Arial;
-            background-color: #f4f4f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
         }
-        .box {
+        .auth-container {
             background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            width: 320px;
+            transition: all 0.3s ease;
+        }
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+        .input-group {
+            margin-bottom: 15px;
         }
         input {
-            display: block;
-            margin: 10px 0;
-            padding: 10px;
-            width: 200px;
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        input:focus {
+            border-color: #667eea;
+            outline: none;
         }
         button {
-            padding: 10px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
             width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
             cursor: pointer;
+            margin-top: 10px;
+            transition: 0.2s;
         }
+        .login-btn { background-color: #4CAF50; }
+        .login-btn:hover { background-color: #439a46; }
+        .signup-btn { background-color: #007BFF; }
+        .signup-btn:hover { background-color: #0069d9; }
+        
+        .toggle-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+        .toggle-link span {
+            color: #764ba2;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .status-msg {
+            margin-top: 15px;
+            font-weight: bold;
+            text-align: center;
+            font-size: 14px;
+        }
+        /* 🕵️‍♂️ Shhh! Isse hum login/signup ko chhupayenge */
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-    <!-- 🦴 Yeh hamari website ka kankal hai (HTML) -->
-    <div class="box">
-        <h2>Naya Account Banao</h2>
-        <input type="text" id="username" placeholder="Username dalo">
-        <input type="password" id="password" placeholder="Password dalo">
-        <button onclick="bhejoData()">Signup</button>
-        <p id="result" style="margin-top: 15px; font-weight: bold;"></p>
+<div class="auth-container">
+    
+    <div id="login-card">
+        <h2>Login Please</h2>
+        <div class="input-group">
+            <input type="text" id="login_user" placeholder="Username">
+        </div>
+        <div class="input-group">
+            <input type="password" id="login_pass" placeholder="Password">
+        </div>
+        <button class="login-btn" onclick="submitLogin()">Sign In</button>
+        <p id="login_msg" class="status-msg"></p>
+        <div class="toggle-link">
+            Don't have Account >>>> <span onclick="toggleCard()">Create an Account</span>
+        </div>
     </div>
 
-    <!-- 🧠 Yeh hamari website ka dimaag hai (JavaScript) -->
-    <script>
-        async function bhejoData() {
-            // 1. Dabbe se data uthao
-            const user = document.getElementById('username').value;
-            const pass = document.getElementById('password').value;
-            const resultParagraph = document.getElementById('result');
+    <div id="signup-card" class="hidden">
+        <h2>Please Create Account</h2>
+        <div class="input-group">
+            <input type="text" id="signup_user" placeholder="Naya Username">
+        </div>
+        <div class="input-group">
+            <input type="password" id="signup_pass" placeholder="Ek Strong Password">
+        </div>
+        <button class="signup-btn" onclick="submitSignup()">Register</button>
+        <p id="signup_msg" class="status-msg"></p>
+        <div class="toggle-link">
+            If Already have account? <span onclick="toggleCard()">Please Login</span>
+        </div>
+    </div>
 
-            // 2. FastAPI (Backend) ko data bhejo
-            try {
-                const response = await fetch('http://127.0.0.1:8000/signup', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: user, password: pass })
-                });
+</div>
 
-                const data = await response.json();
+<script>
+    // 🎛️ Jaadu: Login aur Signup dabbe ko aapas mein badalne ke liye
+    function toggleCard() {
+        document.getElementById('login-card').classList.toggle('hidden');
+        document.getElementById('signup-card').classList.toggle('hidden');
+        // Purane messages saaf karne ke liye
+        document.getElementById('login_msg').innerText = '';
+        document.getElementById('signup_msg').innerText = '';
+    }
 
-                // 3. Jo server ne bola, wo screen par dikhao
-                if(data.error) {
-                    resultParagraph.style.color = "red";
-                    resultParagraph.innerText = data.error;
-                } else {
-                    resultParagraph.style.color = "green";
-                    resultParagraph.innerText = data.message;
-                }
-            } catch(err) {
-                resultParagraph.style.color = "red";
-                resultParagraph.innerText = "Server band hai shayad!";
+    // 🚀 FastAPI Login Integration
+    async function submitLogin() {
+        const user = document.getElementById('login_user').value;
+        const pass = document.getElementById('login_pass').value;
+        const msg = document.getElementById('login_msg');
+
+        try {
+            const res = await fetch('http://127.0.0.1:8000/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: user, password: pass })
+            });
+            const data = await res.json();
+            
+            if(data.error) {
+                msg.style.color = "red";
+                msg.innerText = data.error;
+            } else {
+                msg.style.color = "green";
+                msg.innerText = data.message;
             }
+        } catch(err) {
+            msg.style.color = "red";
+            msg.innerText = "Server band hai!";
         }
-    </script>
+    }
+
+    // 🚀 FastAPI Signup Integration
+    async function submitSignup() {
+        const user = document.getElementById('signup_user').value;
+        const pass = document.getElementById('signup_pass').value;
+        const msg = document.getElementById('signup_msg');
+
+        try {
+            const res = await fetch('http://127.0.0.1:8000/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: user, password: pass })
+            });
+            const data = await res.json();
+            
+            if(data.error) {
+                msg.style.color = "red";
+                msg.innerText = data.error;
+            } else {
+                msg.style.color = "green";
+                msg.innerText = data.message;
+            }
+        } catch(err) {
+            msg.style.color = "red";
+            msg.innerText = "Server band hai!";
+        }
+    }
+</script>
 
 </body>
 </html>
